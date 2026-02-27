@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PenguinsSMP</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;0,900;1,900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --black: #1a1008;
+      --dirt: #7a4f27;
+      --dirt-light: #9c6a38;
+      --dirt-dark: #5c3a18;
+      --cream: #f5e8c7;
+      --grass: #5a8a2c;
+      --grass-bright: #6db33f;
+      --grass-dark: #2d5012;
+      --white: #fdf6e3;
+      --red: #c0392b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      font-family: 'Montserrat', sans-serif;
+      background-color: var(--dirt);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Crect width='64' height='64' fill='%237a4f27'/%3E%3Crect x='0' y='0' width='8' height='8' fill='%238a5c2e'/%3E%3Crect x='16' y='0' width='8' height='8' fill='%236b4420'/%3E%3Crect x='40' y='4' width='12' height='6' fill='%238e6032'/%3E%3Crect x='56' y='0' width='8' height='8' fill='%23693e1c'/%3E%3Crect x='8' y='8' width='10' height='8' fill='%23955f2a'/%3E%3Crect x='24' y='8' width='8' height='10' fill='%23623c1a'/%3E%3Crect x='48' y='8' width='10' height='8' fill='%238a5626'/%3E%3Crect x='0' y='16' width='6' height='10' fill='%23623c1a'/%3E%3Crect x='32' y='16' width='12' height='8' fill='%23955f2a'/%3E%3Crect x='54' y='16' width='10' height='10' fill='%236b4420'/%3E%3Crect x='12' y='24' width='8' height='8' fill='%238a5626'/%3E%3Crect x='28' y='24' width='10' height='6' fill='%235c3a18'/%3E%3Crect x='44' y='24' width='8' height='10' fill='%23955f2a'/%3E%3Crect x='0' y='32' width='10' height='8' fill='%238e6032'/%3E%3Crect x='20' y='32' width='8' height='10' fill='%236b4420'/%3E%3Crect x='36' y='32' width='12' height='8' fill='%23623c1a'/%3E%3Crect x='56' y='32' width='8' height='8' fill='%23955f2a'/%3E%3Crect x='8' y='40' width='10' height='8' fill='%235c3a18'/%3E%3Crect x='30' y='40' width='8' height='10' fill='%238a5626'/%3E%3Crect x='48' y='40' width='10' height='8' fill='%238e6032'/%3E%3Crect x='0' y='48' width='8' height='16' fill='%23955f2a'/%3E%3Crect x='16' y='50' width='12' height='14' fill='%235c3a18'/%3E%3Crect x='38' y='48' width='10' height='16' fill='%236b4420'/%3E%3Crect x='56' y='50' width='8' height='14' fill='%238a5626'/%3E%3C/svg%3E");
+      background-size: 64px 64px;
+      image-rendering: pixelated;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2.5rem 1.5rem;
+    }
+
+    /* Grass strip top */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 20px;
+      background: linear-gradient(to bottom, #6db33f 0%, #6db33f 60%, #5a9e30 60%);
+      border-bottom: 4px solid var(--black);
+      z-index: 100;
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 20px;
+      background: repeating-linear-gradient(
+        90deg,
+        transparent 0, transparent 15px,
+        rgba(0,0,0,0.1) 15px, rgba(0,0,0,0.1) 16px
+      );
+      z-index: 101;
+      pointer-events: none;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--cream);
+      border: 4px solid var(--black);
+      box-shadow: 10px 10px 0 var(--black);
+      max-width: 480px;
+      width: 100%;
+      margin-top: 20px;
+      overflow: hidden;
+      animation: cardDrop 0.55s cubic-bezier(.22,1.2,.36,1) both;
+    }
+    @keyframes cardDrop {
+      from { opacity: 0; transform: translateY(-28px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .card-lip {
+      height: 10px;
+      background: repeating-linear-gradient(
+        90deg,
+        #6db33f 0, #6db33f 16px,
+        #5a9e30 16px, #5a9e30 24px,
+        #4d8a27 24px, #4d8a27 32px,
+        #6db33f 32px, #6db33f 48px
+      );
+      border-bottom: 3px solid var(--black);
+    }
+
+    .card-body { padding: 2rem 2rem 1.75rem; }
+
+    /* ── Logo ── */
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.4rem;
+    }
+    .logo-penguin {
+      width: 54px; height: 54px;
+      border: 3px solid var(--black);
+      box-shadow: 4px 4px 0 var(--black);
+      image-rendering: pixelated;
+      flex-shrink: 0;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%231a1a2e'/%3E%3Crect x='5' y='1' width='6' height='8' fill='%23f0f0f0'/%3E%3Crect x='4' y='1' width='2' height='7' fill='%231a1a2e'/%3E%3Crect x='10' y='1' width='2' height='7' fill='%231a1a2e'/%3E%3Crect x='5' y='3' width='2' height='2' fill='%231a1a2e'/%3E%3Crect x='9' y='3' width='2' height='2' fill='%231a1a2e'/%3E%3Crect x='6' y='7' width='4' height='1' fill='%231a1a2e'/%3E%3Crect x='6' y='8' width='4' height='2' fill='%23f5a623'/%3E%3Crect x='3' y='10' width='10' height='5' fill='%231a1a2e'/%3E%3Crect x='5' y='10' width='6' height='4' fill='%23f0f0f0'/%3E%3Crect x='3' y='14' width='3' height='2' fill='%23f5a623'/%3E%3Crect x='10' y='14' width='3' height='2' fill='%23f5a623'/%3E%3C/svg%3E") center/cover;
+      transition: transform 0.25s cubic-bezier(.22,1.5,.36,1);
+      cursor: default;
+    }
+    .logo-penguin:hover { transform: rotate(-10deg) scale(1.12); }
+
+    .logo-name {
+      font-weight: 900;
+      font-size: 1.7rem;
+      color: var(--black);
+      letter-spacing: -1.5px;
+      line-height: 1;
+    }
+    .logo-sub {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.58rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--dirt);
+      margin-top: 4px;
+    }
+
+    /* ── Divider ── */
+    .divider {
+      height: 3px;
+      background: repeating-linear-gradient(
+        90deg,
+        var(--black) 0, var(--black) 8px,
+        var(--dirt) 8px, var(--dirt) 16px
+      );
+      margin: 1.25rem 0;
+    }
+
+    /* ── Login ── */
+    .label {
+      display: block;
+      font-size: 0.67rem;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--black);
+      margin-bottom: 7px;
+    }
+    .input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      font-family: 'Space Mono', monospace;
+      font-size: 1rem;
+      border: 3px solid var(--black);
+      background: var(--white);
+      color: var(--black);
+      outline: none;
+      letter-spacing: 5px;
+      transition: box-shadow 0.12s, transform 0.12s;
+    }
+    .input:focus {
+      box-shadow: 5px 5px 0 var(--black);
+      transform: translate(-2px, -2px);
+    }
+    .error {
+      margin-top: 0.7rem;
+      padding: 0.55rem 0.8rem;
+      background: #ffd5d5;
+      border: 3px solid var(--black);
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--red);
+      display: none;
+    }
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20% { transform: translateX(-7px); }
+      40% { transform: translateX(7px); }
+      60% { transform: translateX(-4px); }
+      80% { transform: translateX(4px); }
+    }
+
+    /* ── Buttons ── */
+    .btn {
+      display: block;
+      width: 100%;
+      margin-top: 0.9rem;
+      padding: 0.85rem 1rem;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      background: var(--black);
+      color: var(--cream);
+      border: 3px solid var(--black);
+      cursor: pointer;
+      transition: transform 0.08s, box-shadow 0.08s;
+      box-shadow: 5px 5px 0 var(--dirt);
+      text-decoration: none;
+      text-align: center;
+    }
+    .btn:hover  { transform: translate(-2px,-2px); box-shadow: 7px 7px 0 var(--dirt); }
+    .btn:active { transform: translate(2px,2px); box-shadow: 2px 2px 0 var(--dirt); }
+
+    .btn-launch {
+      background: var(--grass);
+      box-shadow: 5px 5px 0 var(--grass-dark);
+      font-size: 0.95rem;
+      padding: 1rem;
+      margin-top: 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-launch::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.15) 50%, transparent 70%);
+      transform: translateX(-100%);
+      transition: transform 0.5s ease;
+    }
+    .btn-launch:hover::after { transform: translateX(100%); }
+    .btn-launch:hover  { box-shadow: 7px 7px 0 var(--grass-dark); }
+    .btn-launch:active { box-shadow: 2px 2px 0 var(--grass-dark); }
+
+    /* ── Main View ── */
+    #main-view { display: none; }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--black);
+      color: var(--cream);
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      padding: 5px 11px;
+      margin-bottom: 1rem;
+    }
+    .badge-dot {
+      width: 7px; height: 7px;
+      background: var(--grass-bright);
+      border-radius: 50%;
+      animation: pulse 2s ease infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 rgba(109,179,63,0.6); }
+      50%      { opacity: 0.8; transform: scale(0.8); box-shadow: 0 0 0 4px rgba(109,179,63,0); }
+    }
+
+    .main-title {
+      font-weight: 900;
+      font-size: 2.8rem;
+      line-height: 0.93;
+      color: var(--black);
+      letter-spacing: -2.5px;
+      margin-bottom: 0.7rem;
+    }
+    .main-title .italic {
+      font-style: italic;
+      color: var(--grass);
+    }
+    .main-title .outline {
+      -webkit-text-stroke: 3px var(--black);
+      color: transparent;
+    }
+
+    .desc {
+      font-size: 0.79rem;
+      line-height: 1.75;
+      color: #5a3e22;
+      font-weight: 500;
+      margin-bottom: 1.4rem;
+    }
+
+    /* ── Info Table ── */
+    .server-info {
+      border: 3px solid var(--black);
+      background: var(--white);
+      margin-bottom: 1.3rem;
+      overflow: hidden;
+    }
+    .info-row {
+      display: flex;
+      align-items: stretch;
+      border-bottom: 2px solid var(--black);
+    }
+    .info-row:last-child { border-bottom: none; }
+    .info-key {
+      font-size: 0.58rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--cream);
+      background: var(--black);
+      padding: 0.55rem 0.7rem;
+      display: flex;
+      align-items: center;
+      min-width: 108px;
+      flex-shrink: 0;
+      line-height: 1.4;
+    }
+    .info-val {
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--black);
+      padding: 0.55rem 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+      font-family: 'Space Mono', monospace;
+      word-break: break-all;
+    }
+    .info-val.green { color: var(--grass); font-family: 'Montserrat', sans-serif; }
+
+    /* ── Copy Button ── */
+    .copy-btn {
+      background: var(--dirt);
+      color: var(--cream);
+      border: 2px solid var(--black);
+      padding: 4px 9px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.6rem;
+      font-weight: 900;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s, box-shadow 0.1s;
+      flex-shrink: 0;
+      white-space: nowrap;
+      box-shadow: 2px 2px 0 var(--black);
+    }
+    .copy-btn:hover { background: var(--black); transform: translate(-1px,-1px); box-shadow: 3px 3px 0 var(--black); }
+    .copy-btn:active { transform: translate(1px,1px); box-shadow: 1px 1px 0 var(--black); }
+    .copy-btn.copied {
+      background: var(--grass);
+      animation: copyPop 0.25s cubic-bezier(.22,1.5,.36,1);
+    }
+    @keyframes copyPop {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+      100% { transform: scale(1); }
+    }
+
+    /* ── Pixel Row ── */
+    .pixel-row {
+      display: flex;
+      justify-content: center;
+      gap: 3px;
+      margin: 1.15rem 0 0.8rem;
+    }
+    .px {
+      width: 13px; height: 13px;
+      border: 2px solid var(--black);
+      cursor: default;
+      transition: transform 0.15s cubic-bezier(.22,1.5,.36,1);
+    }
+    .px:hover { transform: translateY(-5px) scale(1.1); }
+
+    .footer-note {
+      text-align: center;
+      font-size: 0.6rem;
+      color: var(--dirt);
+      font-weight: 700;
+      letter-spacing: 1px;
+      font-family: 'Space Mono', monospace;
+    }
+
+    /* ── Stagger animations ── */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(14px);
+      animation: fadeUp 0.45s ease forwards;
+    }
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <div class="card-lip"></div>
+  <div class="card-body">
+
+    <div class="logo">
+      <div class="logo-penguin"></div>
+      <div>
+        <div class="logo-name">PenguinsSMP</div>
+        <div class="logo-sub">MC Server</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ─── LOGIN ─── -->
+    <div id="login-view">
+      <label class="label" for="pw">Password</label>
+      <input class="input" type="password" id="pw" placeholder="••••••••••••" autocomplete="off" />
+      <div class="error" id="err">❌ Wrong password — try again.</div>
+      <button class="btn" onclick="tryLogin()">Enter the SMP →</button>
+    </div>
+
+    <!-- ─── MAIN ─── -->
+    <div id="main-view">
+
+      <div class="badge fade-up" style="animation-delay:0s">
+        <span class="badge-dot"></span> Server is Online
+      </div>
+
+      <div class="main-title fade-up" style="animation-delay:0.07s">
+        The<br>
+        <span class="italic">Penguin</span><br>
+        <span class="outline">SMP</span>
+      </div>
+
+      <p class="desc fade-up" style="animation-delay:0.13s">
+        Real Penguin SMP on Tuff Client (1.12.2)<br>
+        Member only site. Do not leak IP
+      </p>
+
+      <div class="server-info fade-up" style="animation-delay:0.19s">
+
+        <div class="info-row">
+          <div class="info-key">Status</div>
+          <div class="info-val green">● Online</div>
+        </div>
+
+        <div class="info-row">
+          <div class="info-key">Server IP 🌍</div>
+          <div class="info-val">
+            <span id="ip-text" style="font-size:0.62rem;line-height:1.5">wss://eaglercraft-xmcjijaw.usw-1.sealos.app</span>
+            <button class="copy-btn" id="copy-btn" onclick="copyIP()">Copy</button>
+          </div>
+        </div>
+
+        <div class="info-row">
+          <div class="info-key">Gamemode ❤️</div>
+          <div class="info-val">Survival</div>
+        </div>
+
+        <div class="info-row">
+          <div class="info-key">Whitelist</div>
+          <div class="info-val">Yes</div>
+        </div>
+
+      </div>
+
+      <div class="fade-up" style="animation-delay:0.25s">
+        <a class="btn btn-launch" href="/TuffPenguin.html">▶ Launch 1.12 (Penguin) 🐧</a>
+      </div>
+
+      <div class="pixel-row fade-up" style="animation-delay:0.31s">
+        <div class="px" style="background:#6db33f"></div>
+        <div class="px" style="background:#7a4f27"></div>
+        <div class="px" style="background:#9c6a38"></div>
+        <div class="px" style="background:#7a4f27"></div>
+        <div class="px" style="background:#5c3a18"></div>
+        <div class="px" style="background:#6db33f"></div>
+        <div class="px" style="background:#7a4f27"></div>
+        <div class="px" style="background:#9c6a38"></div>
+        <div class="px" style="background:#6db33f"></div>
+        <div class="px" style="background:#7a4f27"></div>
+        <div class="px" style="background:#5c3a18"></div>
+        <div class="px" style="background:#6db33f"></div>
+      </div>
+
+      <p class="footer-note fade-up" style="animation-delay:0.36s">
+        PenguinsSMP · Minecraft 1.12.2 · Members only
+      </p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const PASSWORD  = "Penguin2025";
+  const SERVER_IP = "wss://eaglercraft-xmcjijaw.usw-1.sealos.app";
+
+  if (sessionStorage.getItem("psmp_auth") === "1") showMain();
+
+  document.getElementById("pw").addEventListener("keydown", e => {
+    if (e.key === "Enter") tryLogin();
+  });
+
+  function tryLogin() {
+    const val = document.getElementById("pw").value;
+    if (val === PASSWORD) {
+      sessionStorage.setItem("psmp_auth", "1");
+      showMain();
+    } else {
+      const err = document.getElementById("err");
+      err.style.display = "block";
+      err.style.animation = "none";
+      void err.offsetWidth;
+      err.style.animation = "shake 0.35s ease";
+      document.getElementById("pw").value = "";
+      document.getElementById("pw").focus();
+    }
+  }
+
+  function showMain() {
+    document.getElementById("login-view").style.display = "none";
+    document.getElementById("main-view").style.display = "block";
+  }
+
+  function copyIP() {
+    const btn = document.getElementById("copy-btn");
+    const finish = () => {
+      btn.textContent = "✓ Copied!";
+      btn.classList.add("copied");
+      setTimeout(() => { btn.textContent = "Copy"; btn.classList.remove("copied"); }, 2200);
+    };
+    navigator.clipboard ? navigator.clipboard.writeText(SERVER_IP).then(finish) : (() => {
+      const t = document.createElement("textarea");
+      t.value = SERVER_IP; document.body.appendChild(t); t.select();
+      document.execCommand("copy"); document.body.removeChild(t); finish();
+    })();
+  }
+</script>
+
+</body>
+</html>
